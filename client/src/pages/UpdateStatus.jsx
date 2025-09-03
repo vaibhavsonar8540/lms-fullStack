@@ -1,112 +1,96 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
-const UpdateStatus = () => {
+const UpdateBook = () => {
   const { bookId } = useParams();
   const navigate = useNavigate();
-
-  const [book, setBook] = useState({
-    title: "",
-    author: "",
-    category: "",
-    content: "",
-    status:""
+  const [formData, setFormData] = useState({
+    status: "Available",
   });
 
-  // Fetch book details
+  // 🔹 Book data fetch on mount
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:3000/api/lms/getbyid/${bookId}`
-        );
-        setBook(res.data.book); // assuming backend sends {book: {...}}
+        const res = await axios.get(`http://localhost:3000/api/lms/getbyid/${bookId}`);
+        setFormData(res.data.book);
       } catch (error) {
-        console.error("Error fetching book:", error);
+        alert("Error fetching book: " + error.message);
       }
     };
     fetchBook();
   }, [bookId]);
 
-  // Handle input changes
+  // 🔹 Handle input changes
   const handleChange = (e) => {
-    setBook({ ...book, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle update submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // 🔹 Update book API call
+  const handleUpdate = async () => {
     try {
-      await axios.put(
-        `http://localhost:3000/api/lms/update/${bookId}`,
-        book
-      );
-      alert("Book updated successfully!");
+      await axios.patch(`http://localhost:3000/api/lms/update/${bookId}`, {
+        status: formData.status, // ✅ always string
+      });
+      alert("Book updated successfully ✅");
       navigate("/books");
     } catch (error) {
-      console.error("Error updating book:", error);
-      alert("Failed to update book.");
+      alert("Failed to update book ❌ " + error.message);
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2 className="text-center mb-4">Update Book</h2>
-      <form
-        className="p-4 shadow rounded-4"
-        style={{ maxWidth: "600px", margin: "0 auto" }}
-        onSubmit={handleSubmit}
-      >
-        <input
-          type="text"
-          name="title"
-          className="form-control mb-3"
-          placeholder="Title"
-          value={book.title}
+    <div
+      style={{
+        maxWidth: "600px",
+        margin: "40px auto",
+        padding: "20px",
+        border: "2px solid #333",
+        borderRadius: "12px",
+        boxShadow: "0px 4px 8px rgba(0,0,0,0.2)",
+      }}
+    >
+      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Update Book</h2>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+
+        {/* 🔹 Status dropdown (only available/unavailable) */}
+        <select
+          name="status"
+          value={formData.status}
           onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="author"
-          className="form-control mb-3"
-          placeholder="Author"
-          value={book.author}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="category"
-          className="form-control mb-3"
-          placeholder="Category"
-          value={book.category}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="content"
-          className="form-control mb-3"
-          placeholder="Content"
-          rows="4"
-          value={book.content}
-          onChange={handleChange}
-        ></textarea>
-        <input
-          type="text"
-          name="bookImage"
-          className="form-control mb-3"
-          placeholder="Image URL"
-          value={book.bookImage}
-          onChange={handleChange}
-        />
-        <button type="submit" className="btn btn-dark w-100">
+          style={{
+            padding: "10px",
+            border: "2px solid #555",
+            borderRadius: "6px",
+            fontSize: "1rem",
+          }}
+        >
+          <option value="available">Available</option>
+          <option value="unavailable">Unavailable</option>
+        </select>
+
+        {/* 🔹 Update Button */}
+        <button
+          onClick={handleUpdate}
+          style={{
+            padding: "12px",
+            background: "#007bff",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "1rem",
+            fontWeight: "bold",
+            width: "100%", // ✅ full width button
+          }}
+        >
           Update Book
         </button>
-      </form>
+      </div>
     </div>
   );
 };
 
-export default UpdateStatus;
+export default UpdateBook;

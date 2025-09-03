@@ -29,20 +29,7 @@ const libController = {
         }
     } ,
 
-    getbyId : async(req,res)=>{
-        const{bookId} = req.params
-
-     const isExistBook = await libModel.find({bookId})
-     if(!isExistBook){
-        return res.status(501).json({message:"book not found"})
-     }
-     try {
-      const book =  await libModel.findById(bookId)
-        res.status(201).json({message:"book found" , book})
-     } catch (error) {
-        res.status(401).json({message:error.message})
-     }
-    },
+  
 
     deleteBook : async(req,res)=>{
          const{bookId} = req.params
@@ -60,26 +47,43 @@ const libController = {
      }
     } ,
 
-    updateStatus : async(req,res)=>{
-        const{bookId} = req.params
- const { status } = req.body
+    // getbyId
+getbyId: async (req, res) => {
+  const { bookId } = req.params;
+  try {
+    const book = await libModel.findById(bookId);
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+    res.status(200).json({ message: "Book found", book });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+},
 
-        if(!status){
-            return res.status(501).json({message:"field is empty"})
-        }
+// update
+updateStatus: async (req, res) => {
+  const { bookId } = req.params;
+  const { status } = req.body;
 
-     const isExistBook = await libModel.find({bookId})
-     if(!isExistBook){
-        return res.status(501).json({message:"book not found"})
-     }
+  if (!status) {
+    return res.status(400).json({ message: "Status field is empty" });
+  }
 
-     try {
-        const updatedbook =  await libModel.findByIdAndUpdate(bookId,{status},{new:true})
-        res.status(201).json({message:"status updated successfully" , updatedbook})
-     } catch (error) {
-        res.status(401).json({message:error.message})
-     }
-    } ,
+  try {
+    const updatedBook = await libModel.findByIdAndUpdate(
+      bookId,
+      { status },
+      { new: true }
+    );
+    if (!updatedBook) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+    res.status(200).json({ message: "Status updated successfully", updatedBook });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+},
 
     // search
 
@@ -99,7 +103,36 @@ const libController = {
     } catch (error) {
        res.status(500).json({ error: error.message});
     }
+  },
+
+
+
+// controller/lms.controller.js
+ filterBooks : async (req, res) => {
+  try {
+    const { status, author, category } = req.body;
+    let filter = {};
+
+    if (status && status !== "") {
+      filter.status ={ $regex: `^${status}$`, $options: "i" };  // "available" | "unavailable"
+    }
+    if (author) {
+      filter.author = { $regex: author, $options: "i" };
+    }
+    if (category) {
+      filter.category = { $regex: category, $options: "i" };
+    }
+
+    const books = await libModel.find(filter);
+    res.status(200).json({ success: true, count: books.length, books });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error });
   }
+}
+
+
+
+
 }
 
 module.exports= libController

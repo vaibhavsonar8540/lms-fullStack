@@ -9,6 +9,9 @@ const Nav = () => {
         color: "white",
         padding: "12px 24px",
         boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
       }}
     >
       <div
@@ -24,14 +27,14 @@ const Nav = () => {
         <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>📚 BookStore</h1>
 
         {/* Nav Links */}
-        <ul style={{ display: "flex", gap: "20px", listStyle: "none" }}>
+        <ul style={{ display: "flex", gap: "20px", listStyle: "none", margin: 0 }}>
           <li>
             <Link
               to="/upload"
               style={{
                 color: "white",
                 textDecoration: "none",
-                transition: "color 0.3s",
+                fontWeight: "500",
               }}
               onMouseOver={(e) => (e.target.style.color = "yellow")}
               onMouseOut={(e) => (e.target.style.color = "white")}
@@ -45,7 +48,7 @@ const Nav = () => {
               style={{
                 color: "white",
                 textDecoration: "none",
-                transition: "color 0.3s",
+                fontWeight: "500",
               }}
               onMouseOver={(e) => (e.target.style.color = "yellow")}
               onMouseOut={(e) => (e.target.style.color = "white")}

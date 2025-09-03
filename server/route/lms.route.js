@@ -11,6 +11,7 @@ libRouter.get("/getbyid/:bookId",libController.getbyId)
 libRouter.delete("/delete/:bookId",libController.deleteBook)
 libRouter.patch("/update/:bookId",libController.updateStatus)
 libRouter.get("/search" , libController.search)
+libRouter.post("/filter" , libController.filterBooks)
 
 module.exports = libRouter
 
