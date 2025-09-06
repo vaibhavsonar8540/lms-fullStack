@@ -30,6 +30,20 @@ const Nav = () => {
         <ul style={{ display: "flex", gap: "20px", listStyle: "none", margin: 0 }}>
           <li>
             <Link
+              to="/"
+              style={{
+                color: "white",
+                textDecoration: "none",
+                fontWeight: "500",
+              }}
+              onMouseOver={(e) => (e.target.style.color = "yellow")}
+              onMouseOut={(e) => (e.target.style.color = "white")}
+            >
+              Home Page
+            </Link>
+          </li>
+          <li>
+            <Link
               to="/upload"
               style={{
                 color: "white",
